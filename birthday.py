@@ -16,6 +16,8 @@ svbdsrh = Service('birthday_search', bundle='pcr娱乐', help_='''
 角色+的生日是那天 看看老婆那天过生日
 '''.strip())
 
+unitdata_path = os.path.join(os.path.dirname(__file__), 'unitdata.json')
+
 def uid2card(uid, user_card_dict):
     return str(uid) if uid not in user_card_dict.keys() else user_card_dict[uid]
 
@@ -30,7 +32,8 @@ def get_cqcode(chara_id):
 
 @bdrm.scheduled_job('cron', hour='00', minute='01')
 async def birthday_reminder():
-    with open(r"hoshino\modules\birthday\unitdata.json", "r", encoding='utf-8') as f:
+    
+    with open(unitdata_path, "r", encoding='utf-8') as f:
         unitdata = json.load(f)
     chara_id_list = list(unitdata.keys())
     month = datetime.datetime.now().month
@@ -57,7 +60,7 @@ async def birthday_reminder():
 
 @svbdsrh.on_keyword(('生日是那天','生日是哪天','生日那天','生日哪天','生日在那天','生日在哪天','那天过生日','哪天过生日','那天生日','哪天生日'))
 async def birthday_search_chara(bot, ev: CQEvent):
-    with open(r"hoshino\modules\birthday\unitdata.json", "r", encoding='utf-8') as f:
+    with open(unitdata_path, "r", encoding='utf-8') as f:
         unitdata = json.load(f)
     name = ev['raw_message'].replace("生日", "").replace("过", "").replace("在", "").replace("哪天", "").replace("那天", "").replace("的", "").replace("啊", "").replace("呀", "").replace("呢", "").replace(" ","").replace("？","")
     if not name:
@@ -77,7 +80,7 @@ async def birthday_search_chara(bot, ev: CQEvent):
 
 @svbdsrh.on_prefix(('谁的生日','谁生日'))
 async def birthday_search_date(bot, ev: CQEvent):
-    with open(r"hoshino\modules\birthday\unitdata.json", "r", encoding='utf-8') as f:
+    with open(unitdata_path, "r", encoding='utf-8') as f:
         unitdata = json.load(f)
     chara_id_list = list(unitdata.keys())
     birthdate = ev['raw_message'].replace("谁的生日", "").replace("过", "").replace("在", "").replace("谁生日", "").replace("号", "日").replace("的", "").replace("生日", "").replace("-", "").replace("是", "").replace(" ","").replace("？","")
